@@ -497,13 +497,34 @@ document.addEventListener('DOMContentLoaded', function() {
     </table>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar Firebase
+        firebase.initializeApp({
+            databaseURL: "https://plan-escoria-granulada-default-rtdb.firebaseio.com"
+        });
+        const db = firebase.database();
+        const tasksRef = db.ref('tareas_plan_escoria');
+
         const selects = document.querySelectorAll('.status-select');
         const progressBar = document.getElementById('progress-bar');
         const progressPercentage = document.getElementById('progress-percentage');
         const completedCountEl = document.getElementById('completed-count');
         const totalCountEl = document.getElementById('total-count');
+
+        // Asignar IDs únicos a cada select basados en la primera columna
+        selects.forEach(select => {
+            const tr = select.closest('tr');
+            const idTd = tr.querySelector('td:first-child');
+            if (idTd) {
+                // Firebase no permite puntos en las llaves, usamos guión bajo
+                select.dataset.id = idTd.textContent.trim().replace(/\./g, '_');
+            }
+        });
 
         function updateProgress() {
             const total = selects.length;
@@ -523,11 +544,28 @@ document.addEventListener('DOMContentLoaded', function() {
             totalCountEl.textContent = total;
         }
 
-        selects.forEach(select => {
-            select.addEventListener('change', updateProgress);
+        // Escuchar cambios desde la base de datos (Sincronización en tiempo real)
+        tasksRef.on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            selects.forEach(select => {
+                const taskId = select.dataset.id;
+                if (data[taskId]) {
+                    select.value = data[taskId];
+                }
+            });
+            updateProgress();
         });
 
-        // Initial calculation
+        // Guardar cambios en la base de datos cuando el usuario local cambia algo
+        selects.forEach(select => {
+            select.addEventListener('change', (e) => {
+                const taskId = select.dataset.id;
+                tasksRef.child(taskId).set(e.target.value);
+                updateProgress(); // Actualización optimista local
+            });
+        });
+
+        // Calculo inicial (se sobrescribirá rápido con los datos de Firebase si hay internet)
         updateProgress();
     });
 </script>
