@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Mantenimiento - Escoria Granulada</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #f4f7f6;
+            --text-color: #333;
+            --border-color: #e1e4e8;
+            --header-bg: #e9ecef;
+            --phase1-color: #ffeeba;
+            --phase2-color: #b8daff;
+            --phase3-color: #c3e6cb;
+            --phase4-color: #d6d8db;
+            --predictive-bg: #e2e3e5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        p.description {
+            font-size: 1.1em;
+            text-align: justify;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--header-bg);
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .phase-row {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .phase-1 { background-color: var(--phase1-color); }
+        .phase-2 { background-color: var(--phase2-color); }
+        .phase-3 { background-color: var(--phase3-color); }
+        .phase-4 { background-color: var(--phase4-color); }
+        .phase-pred { background-color: var(--predictive-bg); }
+
+        .status-select {
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #fff;
+            background-color: #6c757d;
+            margin-bottom: 3px;
+        }
+
+        .tag.mecanico { background-color: #dc3545; }
+        .tag.electrico { background-color: #ffc107; color: #000; }
+        .tag.civil { background-color: #28a745; }
+        .tag.instrumentacion { background-color: #17a2b8; }
+        .tag.predictivo { background-color: #6f42c1; }
+        .tag.proceso { background-color: #e83e8c; }
+        .tag.automatizacion { background-color: #007bff; }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .card ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+
+        .card li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body style="overflow: hidden;">
+
+<div id="password-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--secondary-color); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border-top: 5px solid var(--primary-color);">
+        <h2 style="margin-top: 0; color: var(--primary-color);">Acceso Restringido</h2>
+        <p style="color: var(--text-color); margin-bottom: 20px;">Ingrese la contraseña para acceder al Plan de Trabajo:</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <input type="password" id="password-input" placeholder="Contraseña" style="padding: 10px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc; outline: none; width: 200px;">
+            <button onclick="checkPassword()" style="padding: 10px 20px; font-size: 16px; border-radius: 4px; background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: bold;">Ingresar</button>
+        </div>
+        <p id="password-error" style="color: #dc3545; margin-top: 15px; display: none; font-weight: bold;">Contraseña incorrecta</p>
+    </div>
+</div>
+
+<script>
+function checkPassword() {
+    var pwd = document.getElementById("password-input").value;
+    if (pwd === "VOP2026") {
+        document.getElementById("password-overlay").style.display = "none";
+        document.body.style.overflow = "auto";
+    } else {
+        document.getElementById("password-error").style.display = "block";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("password-input").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            checkPassword();
+        }
+    });
+    // Focus the input when page loads
+    document.getElementById("password-input").focus();
+});
+</script>
+
+<div class="container">
+    <h1>Plan de Trabajo de Mantenimiento <br><small>Implementación de Escoria Granulada en Molienda</small></h1>
+    
+    <p class="description">
+        Este tablero permite realizar el seguimiento a las actividades del Área de Mantenimiento necesarias para la prueba e implementación del uso de escoria granulada en la molienda de cemento. Se enfoca en mitigar riesgos por alta humedad (20%) y abrasividad, garantizando la confiabilidad de los equipos.
+    </p>
+
+    <!-- MATRIZ DE ESTRATEGIA DE MANTENIMIENTO PREDICTIVO -->
+    <h2><span class="tag predictivo">NUEVO</span> Estrategia de Mantenimiento Predictivo</h2>
+    <p class="description">
+        La alta abrasividad de la escoria (y su humedad del 20%) acelera el desgaste de los metales y aumenta el esfuerzo mecánico. Esta estrategia está diseñada para anticipar fallas catastróficas en la <strong>Premolienda</strong> (prensa de rodillos/trituradora) y la <strong>Molienda</strong> (molino de bolas, separador, ventiladores).
+    </p>
+
+    <div class="card-container">
+        <div class="card">
+            <h3>🎛️ Análisis de Vibraciones</h3>
+            <ul>
+                <li><strong>Equipos Objetivo:</strong> Reductores principales (premolienda y molienda), apoyos del separador dinámico y ventilador de tiro inducido.</li>
+                <li><strong>Justificación:</strong> La escoria puede causar un desgaste desigual en los internos, generando desbalanceo. En la premolienda, las vibraciones altas indican desgaste irregular de rodillos o problemas en el sistema hidráulico.</li>
+                <li><strong>Frecuencia Sugerida:</strong> Mensual (Quincenal durante el primer mes de prueba).</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>📏 Medición de Espesores (NDT - Ultrasonido)</h3>
+            <ul>
+                <li><strong>Equipos Objetivo:</strong> Chutes de transferencia, tolva de alimentación, carcasa del separador y ductos de gases.</li>
+                <li><strong>Justificación:</strong> La escoria es extremadamente abrasiva. El desgaste de las planchas antidesgaste será exponencial frente al clinker o caliza.</li>
+                <li><strong>Frecuencia Sugerida:</strong> Levantamiento de línea base inmediato; posteriores cada 2 meses.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>🛢️ Tribología y Análisis de Aceite</h3>
+            <ul>
+                <li><strong>Equipos Objetivo:</strong> Reductor del Molino de Bolas, Reductor de la Prensa de Rodillos y sistema hidráulico de la premolienda.</li>
+                <li><strong>Justificación:</strong> Detectar incremento de metales de desgaste (Fe, Cr, Cu) y contaminación por partículas sólidas en el aceite, lo cual es indicio de sobreesfuerzo en las transmisiones.</li>
+                <li><strong>Frecuencia Sugerida:</strong> Toma de muestra mensual durante los primeros 3 meses.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>🌡️ Termografía Infrarroja</h3>
+            <ul>
+                <li><strong>Equipos Objetivo:</strong> Tableros eléctricos, transformadores de fuerza, motores principales y chumaceras (apoyos del molino).</li>
+                <li><strong>Justificación:</strong> El cambio de granulometría y dureza requerirá mayor potencia en la molienda. Monitorear los puntos calientes previene fallas eléctricas por sobrecarga térmica.</li>
+                <li><strong>Frecuencia Sugerida:</strong> Trimestral.</li>
+            </ul>
+        </div>
+        <div class="card" style="border-left-color: #28a745;">
+            <h3>📊 Progreso del Plan</h3>
+            <div style="margin-top: 20px; text-align: center;">
+                <div style="font-size: 2.5em; font-weight: bold; color: #28a745;" id="progress-percentage">0%</div>
+                <div style="color: #6c757d; margin-bottom: 15px;">Tareas Completadas</div>
+                <div style="width: 100%; background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 20px;">
+                    <div id="progress-bar" style="width: 0%; height: 100%; background-color: #28a745; transition: width 0.3s ease;"></div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9em; color: #333;"><span id="completed-count">0</span> de <span id="total-count">0</span> tareas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLAN DE ACCIÓN GENERAL -->
+    <h2>Matriz de Tareas y Seguimiento</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Actividad</th>
+                <th>Propósito / Impacto</th>
+                <th>Responsable / Especialidad</th>
+                <th>Fecha Límite</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- FASE 1 -->
+            <tr class="phase-row phase-1">
+                <td colspan="6">Fase 1: Preparación y Adecuación de Equipos (Pre-Implementación)</td>
+            </tr>
+            <tr>
+                <td>1.1</td>
+                <td>Compra de Separador Magnético e Instalación de Detector de Metales</td>
+                <td>Adquisición de un nuevo separador magnético y reubicación/instalación del detector para retirar arrabio magnético (hasta 2%) y evitar daños catastróficos en rodillos de premolienda y transportadores.</td>
+                <td><span class="tag electrico">Eléctrico</span> <span class="tag instrumentacion">Instru.</span></td>
+                <td>26/06/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>1.2</td>
+                <td>Calibración de Pesometría (Banda ADICIONES 2)</td>
+                <td>
+                    Ajustar pesaje a nueva densidad y granulometría de la escoria.<br><br>
+                    <strong style="color: #dc3545;">⚠️ Restricción Operativa:</strong> No se debe ajustar la dosificadora a las condiciones de humedad abriendo completamente la guillotina o quitando rodillos para controlar atasques. Esto provocaría la pérdida de la calibración. Considerar que los cambios de receta requerirán realizar una nueva calibración obligatoria.
+                </td>
+                <td><span class="tag instrumentacion">Instru.</span> <span class="tag proceso">Ing. Proceso</span></td>
+                <td>01/07/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>1.3</td>
+                <td>Adecuación de sitio almacenamiento (Nave 1)</td>
+                <td>Asegurar inclinación y drenaje para el 20% de agua libre (humedad) de la escoria.</td>
+                <td><span class="tag civil">Civil</span></td>
+                <td>26/06/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>1.4</td>
+                <td>Socialización Técnica del Proyecto a Mantenimiento</td>
+                <td>Alertar sobre desgaste acelerado por alta abrasividad a inspectores y planeación.</td>
+                <td><span class="tag predictivo">Confiabilidad</span></td>
+                <td>26/06/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- FASE 2 -->
+            <tr class="phase-row phase-2">
+                <td colspan="6">Fase 2: Levantamiento de Línea Base (Antes de la prueba)</td>
+            </tr>
+            <tr>
+                <td>2.1</td>
+                <td>Inspección de Desgaste Inicial (Crash Stop)</td>
+                <td>Medir nivel actual de desgaste en moledores, emplacado de la cámara 1 y 2 del molino de Cemento y área de paso de los tamices central y de salida. Incluir medición de las placas tacón de la zona dispersora del desaglomerador y área de paso de sus mallas.</td>
+                <td><span class="tag proceso">Ing. Proceso</span></td>
+                <td>06/07/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>2.2</td>
+                <td>Mapeo de perfil de rodillos (Premolienda)</td>
+                <td>Tomar plantillas y medición del *hardfacing* (recubrimiento duro) de los rodillos de la prensa.</td>
+                <td><span class="tag predictivo">Predictivo</span> <span class="tag mecanico">Mecánico</span></td>
+                <td>06/07/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>2.3</td>
+                <td>Registro de Consumo Energético Base</td>
+                <td>Tomar métrica de kWh/ton con la receta estándar actual para comparar.</td>
+                <td><span class="tag electrico">Plan. Eléctrica</span> <span class="tag automatizacion">Automatización</span></td>
+                <td>06/07/2026</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- FASE PREDICTIVA (NUEVA FASE TRANSVERSAL) -->
+            <tr class="phase-row phase-pred">
+                <td colspan="6">Fase Transversal: Ejecución Estrategia Predictiva (Durante la prueba)</td>
+            </tr>
+            <tr>
+                <td>P.1</td>
+                <td>Ruta de Vibraciones: Reductores y Ventiladores</td>
+                <td>Detección temprana de fallas en rodamientos y engranajes por sobreesfuerzo de molienda.</td>
+                <td><span class="tag predictivo">Confiabilidad</span></td>
+                <td>Quincenal (Mes 1)</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>P.2</td>
+                <td>Inspección de Espesores por Ultrasonido en Chutes</td>
+                <td>Evitar perforación de ductos y paradas no programadas por fugas de material.</td>
+                <td><span class="tag predictivo">Confiabilidad</span></td>
+                <td>Mensual</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>P.3</td>
+                <td>Muestreo de Aceites (Reductores Principales)</td>
+                <td>Analizar degradación de viscosidad y conteo de partículas metálicas.</td>
+                <td><span class="tag predictivo">Confiabilidad</span></td>
+                <td>Mensual (Mes 1 a 3)</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>P.4</td>
+                <td>Inspección por Tintas Penetrantes</td>
+                <td>Seguimiento a los manholes para detección temprana de fisuras superficiales.</td>
+                <td><span class="tag predictivo">Confiabilidad</span></td>
+                <td>Mensual</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- FASE 4 -->
+            <tr class="phase-row phase-4">
+                <td colspan="6">Fase 4: Evaluación y Estandarización (2 meses después)</td>
+            </tr>
+            <tr>
+                <td>4.1</td>
+                <td>Segunda Inspección de Desgaste (Crash Stop) y Perfil Rodillos</td>
+                <td>Medir desgaste de molino (incluyendo emplacados, tamices y desaglomerador) y prensa de rodillos para recalcular recargas y reacondicionamiento.</td>
+                <td><span class="tag proceso">Ing. Proceso</span> <span class="tag predictivo">Confiabilidad</span></td>
+                <td>Septiembre</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>4.2</td>
+                <td>Análisis de Eficiencia Energética</td>
+                <td>Comparar consumo de energía con escoria vs. consumo de la línea base.</td>
+                <td><span class="tag electrico">Plan. Eléctrica</span> <span class="tag automatizacion">Automatización</span></td>
+                <td>Septiembre</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>4.3</td>
+                <td>Actualización Definitiva en CMMS</td>
+                <td>Modificar frecuencias de cambio de consumibles en el plan preventivo de SAP/Máximo con base en hallazgos predictivos.</td>
+                <td><span class="tag">Planeación</span></td>
+                <td>Septiembre</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>4.4</td>
+                <td>Inspección por Partículas Magnéticas</td>
+                <td>Medición en las virolas del molino para identificar fisuras subsuperficiales tras operar con escoria.</td>
+                <td><span class="tag predictivo">Confiabilidad</span></td>
+                <td>En 6 meses</td>
+                <td>
+                    <select class="status-select">
+                        <option>Pendiente</option>
+                        <option>En Proceso</option>
+                        <option>Completado</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('.status-select');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const completedCountEl = document.getElementById('completed-count');
+        const totalCountEl = document.getElementById('total-count');
+
+        function updateProgress() {
+            const total = selects.length;
+            let completed = 0;
+            
+            selects.forEach(select => {
+                if (select.value === 'Completado') {
+                    completed++;
+                }
+            });
+
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+            
+            progressBar.style.width = percentage + '%';
+            progressPercentage.textContent = percentage + '%';
+            completedCountEl.textContent = completed;
+            totalCountEl.textContent = total;
+        }
+
+        selects.forEach(select => {
+            select.addEventListener('change', updateProgress);
+        });
+
+        // Initial calculation
+        updateProgress();
+    });
+</script>
+</body>
+</html>
