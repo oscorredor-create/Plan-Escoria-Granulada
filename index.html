@@ -505,7 +505,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         // Inicializar Firebase
         firebase.initializeApp({
-            databaseURL: "https://plan-escoria-granulada-default-rtdb.firebaseio.com"
+            apiKey: "AIzaSyB5YGv3UZMpqHpFCZDJJMDbiDL7_O7RSDI",
+            authDomain: "plan-escoria-granulada.firebaseapp.com",
+            databaseURL: "https://plan-escoria-granulada-default-rtdb.firebaseio.com",
+            projectId: "plan-escoria-granulada",
+            storageBucket: "plan-escoria-granulada.firebasestorage.app",
+            messagingSenderId: "8256163532",
+            appId: "1:8256163532:web:84f54ffc4ed6282774fc69",
+            measurementId: "G-X7E55PZ19E"
         });
         const db = firebase.database();
         const tasksRef = db.ref('tareas_plan_escoria');
